@@ -17,13 +17,16 @@ configViewEngine(app);
 //Khai báo route
 app.use("/", webRoutes);
 
-//test connection
 
-// connection.query("select * from Users ", function (err, results, fields) {
-//   console.log(">>>results = ", results); // results contains rows returned by server
-//   console.log(">>>fields =", fields); // fields contains extra meta data about results, if available
-// });
 
-app.listen(port, hostName, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+;(async () => {
+  try {
+    //test connection
+    await connection();
+    app.listen(port, hostName, () => {
+      console.log(`Example app listening on port ${port}`);
+    });
+  } catch (error) {
+    console.log("😐 ~ error:👉", error);
+  }
+})();
