@@ -1,17 +1,19 @@
 const uploadSingleFile = async (fileObject) => {
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let uploadPath = __dirname + fileObject.name;
+  // let uploadPath = __dirname + fileObject.name;
+  let uploadPath = process.cwd() + "/src/public/images/upload";
+  let newName = Date.now() + "_" + fileObject.name;
 
+  let finalPath = `${uploadPath}/${newName}`;
   // Use the mv() method to place the file somewhere on your server
   try {
-    await fileObject.mv(uploadPath);
+    await fileObject.mv(finalPath);
     return {
       status: "Success",
-      path: "image-path",
+      path: newName,
       error: null,
     };
   } catch (error) {
-    console.log("😐 ~ uploadSingleFile ~ error:👉", error);
     return {
       status: "Failed",
       path: null,
@@ -20,7 +22,42 @@ const uploadSingleFile = async (fileObject) => {
   }
 };
 
-const uploadMultipleFiles = () => {};
+const uploadMultipleFiles = async (fileArray) => {
+  try {
+    let uploadPath = process.cwd() + "/src/public/images/upload";
+    let resultArray = [];
+    let countSuccess = 0;
+
+    for (let key in fileArray) {
+      let newName = Date.now() + "_" + fileArray[key].name;
+
+      let finalPath = `${uploadPath}/${newName}`;
+      try {
+        await fileArray[key].mv(finalPath);
+        resultArray.push({
+          status: "Success",
+          path: newName,
+          fileName: fileArray[key].name,
+          error: null,
+        });
+        countSuccess++;
+      } catch (error) {
+        resultArray.push({
+          status: "Failed",
+          path: null,
+          fileName: fileArray[key].name,
+          error: JSON.stringify(error),
+        });
+      }
+    }
+    return {
+      countSuccess,
+      detail: resultArray,
+    };
+  } catch (error) {
+    console.log("😐 ~ error:👉", error);
+  }
+};
 
 module.exports = {
   uploadSingleFile,
