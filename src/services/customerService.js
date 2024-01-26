@@ -1,4 +1,5 @@
 const Customer = require("../models/customer");
+const aqp = require("api-query-params");
 
 module.exports = {
   createCusService: async (name, address, phone, email, description, imageURL) => {
@@ -17,9 +18,17 @@ module.exports = {
       console.log("😐 ~ createCusManyService: ~ error:👉", error);
     }
   },
-  getAllCustomerService: async () => {
+  getAllCustomerService: async (limit, page, name, queryString) => {
     try {
-      let result = await Customer.find();
+      let result = null;
+      if (limit && page) {
+        let offset = (Number(page) - 1) * Number(limit);
+        const { filter } = aqp(queryString);
+        delete filter.page;
+        result = await Customer.find(filter).skip(offset).limit(+limit).exec();
+      } else {
+        result = await Customer.find();
+      }
       return result;
     } catch (error) {
       console.log("😐 ~ error:👉", error);
@@ -39,6 +48,14 @@ module.exports = {
       return result;
     } catch (error) {
       console.log("😐 ~ updateCustomerService: ~ error:👉", error);
+    }
+  },
+  deleteArrayCustomerService: async (customerID) => {
+    try {
+      let result = await Customer.delete({ _id: { $in: customerID } });
+      return result;
+    } catch (error) {
+      console.log("😐 ~ deleteArrayCustomerService: ~ error:👉", error);
     }
   },
 };
