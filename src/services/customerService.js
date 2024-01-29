@@ -4,7 +4,14 @@ const aqp = require("api-query-params");
 module.exports = {
   createCusService: async (name, address, phone, email, description, imageURL) => {
     try {
-      let result = await Customer.create({ name, address, phone, email, description, image: imageURL });
+      let result = await Customer.create({
+        name,
+        address,
+        phone,
+        email,
+        description,
+        image: imageURL,
+      });
       return result;
     } catch (error) {
       console.log("😐 ~ error:👉", error);
